@@ -27,9 +27,9 @@ app.secret_key = os.urandom(24)
 #                    "status char(50), "
 #                    "friends int(1000));")
 #
-#     cursor.execute("DROP TABLE IF EXISTS Friends")
-#     cursor.execute('''CREATE TABLE IF NOT EXISTS Friends
-#     (friend TEXT PRIMARY KEY,
+#     cursor.execute("DROP TABLE IF EXISTS friends")
+#     cursor.execute('''CREATE TABLE IF NOT EXISTS friends
+#     (friend TEXT,
 #     user    TEXT,
 #     FOREIGN KEY (user) REFERENCES users (name))''')
 #     conn.commit()
@@ -231,6 +231,12 @@ def myprofile():
         # print(exists1)
         # print(username, ' | ', email)
         # , username = username, email = email
+
+        # with sqlite3.connect('memory.db') as conn:
+        #     cursor = conn.cursor()
+        #     cursor.execute('''SELECT * FROM friends WHERE name=?''', (session['name_search'],))
+        #     exists1 = cursor.fetchall()
+
         return render_template("myprofile.html", name=session['name'].capitalize(), username=username, email=email,
                                university=session['university'], birthday=session['birthday'],
                                hometown=session['hometown'],
