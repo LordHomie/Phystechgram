@@ -11,11 +11,28 @@ app.secret_key = os.urandom(24)
 
 
 # with sqlite3.connect('memory.db') as conn:
+#     conn.execute("PRAGMA foreign_keys = 1")
 #     cursor = conn.cursor()
 #     cursor.execute("DROP TABLE IF EXISTS users")
-#     cursor.execute(
-#         "CREATE TABLE users (user_id char(50), name char(50), email char(50), password char(30), "
-#         "university char(50), birthday char(50), age char(10), hometown char(50), photo, status char(50), friends int(1000));")
+#     cursor.execute("CREATE TABLE users "
+#                    "(user_id char(50), "
+#                    "name char(50) PRIMARY KEY, "
+#                    "email char(50), "
+#                    "password char(30), "
+#                    "university char(50), "
+#                    "birthday char(50), "
+#                    "age char(10), "
+#                    "hometown char(50), "
+#                    "photo, "
+#                    "status char(50), "
+#                    "friends int(1000));")
+#
+#     cursor.execute("DROP TABLE IF EXISTS Friends")
+#     cursor.execute('''CREATE TABLE IF NOT EXISTS Friends
+#     (friend TEXT PRIMARY KEY,
+#     user    TEXT,
+#     FOREIGN KEY (user) REFERENCES users (name))''')
+#     conn.commit()
 
 @app.route('/')
 def login():
@@ -276,13 +293,14 @@ def follow_friend():
         name_search = session['name_search']
         print(name)
         print(name_search)
-        print(name==name_search)
+        print(name == name_search)
         # if name==name_search(done)/ if name_search is none/ if name_search already in friends/ allow multiple names go to the column
 
         with sqlite3.connect('memory.db') as conn:
             cursor = conn.cursor()
+
             if name != name_search:
-                cursor.execute('''UPDATE users SET friends=? WHERE name=?''', (name_search, name))
+                cursor.execute("""INSERT INTO friends(friend, user) VALUES ('{}', '{}')""".format(name_search, name))
                 conn.commit()
                 return render_template("search.html")
 
