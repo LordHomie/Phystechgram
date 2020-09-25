@@ -230,11 +230,10 @@ def myprofile():
         # print(exists1)
         # print(username, ' | ', email)
         # , username = username, email = email
-
         return render_template("myprofile.html", name=session['name'].capitalize(), username=username, email=email,
                                university=session['university'], birthday=session['birthday'],
                                hometown=session['hometown'], photo=session['photo'],
-                               status=session['status'], age=session['age'], rows=count_friends()
+                               status=session['status'], age=session['age'], rows=count_friends(), friends=list(friends_list())
                                )
     else:
         return redirect('/')
@@ -292,6 +291,16 @@ def count_friends():
         count = cursor.fetchone()
         rows = count[0]
         return rows
+
+def friends_list():
+    with sqlite3.connect('memory.db') as conn:
+        cursor = conn.cursor()
+        name = session['name']
+        cursor.execute('''SELECT * FROM friends WHERE user=?''', (name,))
+        rows = cursor.fetchall()
+        for row in rows:
+            friends = row[0]
+            yield friends
 
 @app.route('/follow_friend', methods=['POST'])
 def follow_friend():
