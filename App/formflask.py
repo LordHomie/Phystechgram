@@ -1,7 +1,6 @@
 from flask import Flask, render_template, request, redirect, session, flash
 import base64
 # from config import secret_key
-# import mysql.connector
 import sqlite3
 import os
 from datetime import date
@@ -232,21 +231,10 @@ def myprofile():
         # print(username, ' | ', email)
         # , username = username, email = email
 
-        # name1 = session['name']
-        # name_search1 = session['name_search']
-        # with sqlite3.connect('memory.db') as conn:
-        #     cursor = conn.cursor()
-        #     cursor.execute('''SELECT * FROM friends WHERE user=?''', (name,))
-        #     exists1 = cursor.fetchall()
-        #     for row in exists1:
-        #         # if name and name_search1 in row:
-        #             print(row)
-                # print(row[0])
-
         return render_template("myprofile.html", name=session['name'].capitalize(), username=username, email=email,
                                university=session['university'], birthday=session['birthday'],
-                               hometown=session['hometown'],
-                               photo=session['photo'], status=session['status'], age=session['age']
+                               hometown=session['hometown'], photo=session['photo'],
+                               status=session['status'], age=session['age'], rows=count_friends()
                                )
     else:
         return redirect('/')
@@ -278,7 +266,6 @@ def search():
             session['not_found'] = "Sorry, we couldn't find anything :("
             return render_template("search.html", error=session['not_found'])
 
-
     else:
         return redirect('/')
 
@@ -296,6 +283,15 @@ def user():
     else:
         return redirect('/')
 
+
+def count_friends():
+    with sqlite3.connect('memory.db') as conn:
+        cursor = conn.cursor()
+        name = session['name']
+        cursor.execute('''SELECT COUNT(*) FROM friends WHERE user=?''', (name,))
+        count = cursor.fetchone()
+        rows = count[0]
+        return rows
 
 @app.route('/follow_friend', methods=['POST'])
 def follow_friend():
