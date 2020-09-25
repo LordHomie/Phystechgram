@@ -26,7 +26,7 @@ app.secret_key = os.urandom(24)
 #                    "photo, "
 #                    "status char(50), "
 #                    "friends int(1000));")
-#
+# #
 #     cursor.execute("DROP TABLE IF EXISTS friends")
 #     cursor.execute('''CREATE TABLE IF NOT EXISTS friends
 #     (friend TEXT,
@@ -232,10 +232,16 @@ def myprofile():
         # print(username, ' | ', email)
         # , username = username, email = email
 
+        # name1 = session['name']
+        # name_search1 = session['name_search']
         # with sqlite3.connect('memory.db') as conn:
         #     cursor = conn.cursor()
-        #     cursor.execute('''SELECT * FROM friends WHERE name=?''', (session['name_search'],))
+        #     cursor.execute('''SELECT * FROM friends WHERE user=?''', (name,))
         #     exists1 = cursor.fetchall()
+        #     for row in exists1:
+        #         # if name and name_search1 in row:
+        #             print(row)
+                # print(row[0])
 
         return render_template("myprofile.html", name=session['name'].capitalize(), username=username, email=email,
                                university=session['university'], birthday=session['birthday'],
@@ -297,20 +303,27 @@ def follow_friend():
         session['logged_in'] = True
         name = session['name']
         name_search = session['name_search']
-        print(name)
-        print(name_search)
-        print(name == name_search)
-        # if name==name_search(done)/ if name_search is none/ if name_search already in friends/ allow multiple names go to the column
+        # if name==name_search(done)/ if name_search is none/ if name_search already in friends/ allow multiple names go to the column(done)
 
         with sqlite3.connect('memory.db') as conn:
             cursor = conn.cursor()
 
-            if name != name_search:
-                cursor.execute("""INSERT INTO friends(friend, user) VALUES ('{}', '{}')""".format(name_search, name))
-                conn.commit()
+            cursor.execute('''SELECT * FROM friends WHERE user=?''', (name,))
+            exists1 = cursor.fetchall()
+            # print(exists1)
+            # print(name)
+            # print(name_search)
+
+            match = (name_search, name)
+            if match in exists1:
+                return render_template("search.html")
+
+            elif name == name_search:
                 return render_template("search.html")
 
             else:
+                cursor.execute("""INSERT INTO friends(friend, user) VALUES ('{}', '{}')""".format(name_search, name))
+                conn.commit()
                 return render_template("search.html")
 
     else:
