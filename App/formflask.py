@@ -4,8 +4,14 @@ import base64
 import sqlite3
 import os
 from datetime import date
+from werkzeug.utils import secure_filename
+
+UPLOAD_FOLDER = '/Users/ASUS/Documents/MIPT/Software development practice/Phystechgram/App/static/images'
+ALLOWED_EXTENSIONS = set(['txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'])
+
 
 app = Flask(__name__, template_folder='templates')
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.secret_key = os.urandom(24)
 
 
@@ -195,8 +201,13 @@ def add_picture():
     if 'user_id' in session:
         session['logged_in'] = True
         photo = request.form.get('photo')
-        # with open(photo, 'rb') as file:
-        #     blobData = base64.b64encode(file.read())
+
+        image = request.files['file']  # myfile is name of input tag
+        # print("uploading image...")
+        filename = secure_filename(image.filename)
+        image.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+        path = os.path.realpath(image.filename)
+        # print(path)
 
         with sqlite3.connect('memory.db') as conn:
             cursor = conn.cursor()
@@ -204,7 +215,7 @@ def add_picture():
             cursor.execute('''UPDATE users SET photo=? WHERE name=?''', (photo, name))
             conn.commit()
 
-            return redirect("/settings")
+        return redirect("/settings")
     else:
         return redirect('/')
 

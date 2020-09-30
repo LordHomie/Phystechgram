@@ -62,12 +62,15 @@
               </form>
 
 
-                <form class="form" method="post" action="/add_picture">
-                <p><input type="file"  accept="image/*" class="form-control" name="photo" id="file" onchange="loadFile(event)" style="display: none;"></p>
-                <p><label for="file" style="cursor: pointer;">Click here to upload picture</label></p>
-                <input type=submit value=Submit>
-                <p><img id="output" width="200" /></p>
-                </form>
+                <form class="form" method="post" action="/add_picture" enctype="multipart/form-data">
+<!--                    <form class="form" method="post" action="/add_picture">-->
+                    <p><input type="file"  accept="image/*" class="form-control" name="file" id="file" onchange="loadFile(event)" style="display: none;"></p>
+<!--                    <p><input type="file"  accept="image/*" class="form-control" name="photo" id="file" onchange="loadFile(event)" style="display: none;"></p>-->
+                    <p><label for="file" style="cursor: pointer;">Click here to upload picture</label></p>
+                    <input type=submit value=Submit>
+                    <p><img id="output" width="200" /></p>
+                    </form>
+<!--                </form>-->
 
                 <script>
                     var loadFile = function(event) {
@@ -75,8 +78,7 @@
                     image.src = URL.createObjectURL(event.target.files[0]);
                 };
                 </script>
-<!--                <img src="{{ url_for('.static', filename='images/IMG_2165.JPG') }}" width="200" height="200">-->
-<!--                <img src="{{ url_for('.static', filename='images/IMG_2165.JPG') }}" width="200" height="200">-->
+<!--                <img src="{{ url_for('.static', filename='images/{{ photo }}') }}" width="200" height="200">-->
 <!--                <a class="p-2 text-dark">{{ photo }}</a>-->
 
             </div>
