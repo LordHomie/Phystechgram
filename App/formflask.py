@@ -251,7 +251,7 @@ def myprofile():
         return render_template("myprofile.html", name=session['name'].capitalize(), username=username, email=email,
                                university=session['university'], birthday=session['birthday'],
                                hometown=session['hometown'], photo=session['photo'],
-                               status=session['status'], age=session['age'], rows=count_friends(), friends=list(friends_list())
+                               status=session['status'], age=session['age'], rows=count_friends(), friends=friends_list()
                                )
     else:
         return redirect('/')
@@ -262,7 +262,7 @@ def search():
     if 'user_id' in session:
         session['logged_in'] = True
         session['name_search'] = request.form.get('name')
-
+        user = session['name']
         with sqlite3.connect('memory.db') as conn:
             cursor = conn.cursor()
         cursor.execute('''SELECT * FROM users WHERE name=?''', (session['name_search'],))
@@ -276,7 +276,7 @@ def search():
             session['hometown_search'] = exists1[0][7]
             session['photo_search'] = exists1[0][8]
             session['status_search'] = exists1[0][9]
-            return render_template("search.html", name=session['name_search'].capitalize(),
+            return render_template("search.html", user=user, name=session['name_search'].capitalize(),
                                    university=session['university_search'], hometown=session['hometown_search'],
                                    photo=session['photo_search'], age=session['age_search'])
         else:
@@ -291,12 +291,15 @@ def search():
 def user():
     if 'user_id' in session:
         session['logged_in'] = True
+        user = session['name']
+        session['name_search'] = request.form.get('name')
 
-        return render_template("user.html", name=session['name_search'].capitalize(), email=session['email_search'],
+        return render_template("user.html", user=user, name=session['name_search'], email=session['email_search'],
                                university=session['university_search'], birthday=session['birthday_search'],
                                hometown=session['hometown_search'],
                                photo=session['photo_search'], age=session['age_search'],
                                status=session['status_search'])
+        # redirect('/home')
     else:
         return redirect('/')
 

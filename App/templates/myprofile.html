@@ -56,7 +56,10 @@
         </div>
 
     <label>Friends </label> <label> ({{ rows }}) </label><br><br>
-                            <p class="mt-2"> <a href="/user"> {{ friends }}</a></p>
+<!--                            <p class="mt-2"> <a href="/user"> {{ friends }}</a></p>-->
+    {%- for item in friends %}
+        <p class="mt-2"> <a href="/user"> {{ item }} </a></p> {% if not loop.last %},{% endif %}
+    {%- endfor %}
 
 
 <!--    <img src="{{ url_for('.static', filename='images/{{ photo }}') }}" width="200" height="200">-->
