@@ -31,10 +31,18 @@ app.secret_key = os.urandom(24)
 #                    "photo, "
 #                    "status char(50), "
 #                    "friends int(1000));")
-# #
+# # #
 #     cursor.execute("DROP TABLE IF EXISTS friends")
 #     cursor.execute('''CREATE TABLE IF NOT EXISTS friends
 #     (friend TEXT,
+#     user    TEXT,
+#     FOREIGN KEY (user) REFERENCES users (name))''')
+#     conn.commit()
+# # #
+#     cursor.execute("DROP TABLE IF EXISTS posts")
+#     cursor.execute('''CREATE TABLE IF NOT EXISTS posts
+#     (feeds TEXT,
+#     photo   TEXT,
 #     user    TEXT,
 #     FOREIGN KEY (user) REFERENCES users (name))''')
 #     conn.commit()
@@ -111,8 +119,7 @@ def add_user():
         # for line in userID:
         # print("Line {}: {}".format(userID, lines.strip()), sep='')
         cursor.execute(
-            """INSERT INTO users(user_id, name, email, password) VALUES (NULL, '{}', '{}', '{}')""".format(name, email,
-                                                                                                           password))
+            """INSERT INTO users(user_id, name, email, password) VALUES (NULL, '{}', '{}', '{}')""".format(name, email, password))
         # count += 1
         conn.commit()
 
@@ -200,19 +207,19 @@ def edit_settings():
 def add_picture():
     if 'user_id' in session:
         session['logged_in'] = True
-        photo = request.form.get('photo')
+        # photo = request.form.get('photo')
 
         image = request.files['file']  # myfile is name of input tag
-        # print("uploading image...")
         filename = secure_filename(image.filename)
         image.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
         path = os.path.realpath(image.filename)
+        # print(image.filename)
         # print(path)
 
         with sqlite3.connect('memory.db') as conn:
             cursor = conn.cursor()
             name = session['name']
-            cursor.execute('''UPDATE users SET photo=? WHERE name=?''', (photo, name))
+            cursor.execute('''UPDATE users SET photo=? WHERE name=?''', (image.filename, name))
             conn.commit()
 
         return redirect("/settings")
@@ -340,7 +347,31 @@ def follow_friend():
             else:
                 cursor.execute("""INSERT INTO friends(friend, user) VALUES ('{}', '{}')""".format(name_search, name))
                 conn.commit()
-                return render_template("search.html")
+                return redirect('/user')
+
+    else:
+        return redirect('/')
+
+
+@app.route('/add_post', methods=['POST'])
+def add_post():
+    if 'user_id' in session:
+        session['logged_in'] = True
+        name = session['name']
+        feeds = request.form.get('feeds')
+
+        image = request.files['file']  # myfile is name of input tag
+        filename = secure_filename(image.filename)
+        image.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+        path = os.path.realpath(image.filename)
+
+        with sqlite3.connect('memory.db') as conn:
+            cursor = conn.cursor()
+            cursor.execute("""INSERT INTO posts(feeds, photo, user) VALUES ('{}', '{}', '{}')""".format(feeds, image.filename, name))
+            # cursor.execute("""INSERT INTO posts(photo, user) VALUES ('{}', '{}')""".format(image.filename, name))
+            conn.commit()
+
+            return redirect('/home')
 
     else:
         return redirect('/')

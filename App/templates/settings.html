@@ -63,14 +63,12 @@
 
 
                 <form class="form" method="post" action="/add_picture" enctype="multipart/form-data">
-<!--                    <form class="form" method="post" action="/add_picture">-->
                     <p><input type="file"  accept="image/*" class="form-control" name="file" id="file" onchange="loadFile(event)" style="display: none;"></p>
-<!--                    <p><input type="file"  accept="image/*" class="form-control" name="photo" id="file" onchange="loadFile(event)" style="display: none;"></p>-->
+<!--                    <p><input type="file" name="photo">-->
                     <p><label for="file" style="cursor: pointer;">Click here to upload picture</label></p>
                     <input type=submit value=Submit>
                     <p><img id="output" width="200" /></p>
-                    </form>
-<!--                </form>-->
+                </form>
 
                 <script>
                     var loadFile = function(event) {
