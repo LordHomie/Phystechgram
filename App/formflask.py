@@ -1,4 +1,5 @@
 from flask import Flask, render_template, request, redirect, session, flash
+from flask_socketio import SocketIO, join_room, leave_room
 import base64
 # from config import secret_key
 import sqlite3
@@ -9,8 +10,8 @@ from werkzeug.utils import secure_filename
 UPLOAD_FOLDER = '/Users/ASUS/Documents/MIPT/Software development practice/Phystechgram/App/static/images'
 ALLOWED_EXTENSIONS = set(['txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'])
 
-
 app = Flask(__name__, template_folder='templates')
+socketio = SocketIO(app)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.secret_key = os.urandom(24)
 
@@ -61,7 +62,9 @@ def register():
 def home():
     if 'user_id' in session:
         session['logged_in'] = True
-        return render_template("home.html", name=session['name'].capitalize())
+        # return render_template("home.html", name=session['name'].capitalize())
+        return render_template("home.html", name=session['name'].capitalize(), feed=post_feed(), image=post_image(),
+                               user=post_user())
     else:
         return redirect('/')
 
@@ -119,7 +122,8 @@ def add_user():
         # for line in userID:
         # print("Line {}: {}".format(userID, lines.strip()), sep='')
         cursor.execute(
-            """INSERT INTO users(user_id, name, email, password) VALUES (NULL, '{}', '{}', '{}')""".format(name, email, password))
+            """INSERT INTO users(user_id, name, email, password) VALUES (NULL, '{}', '{}', '{}')""".format(name, email,
+                                                                                                           password))
         # count += 1
         conn.commit()
 
@@ -231,6 +235,8 @@ def add_picture():
 def myprofile():
     if 'user_id' in session:
         session['logged_in'] = True
+        friend = request.form.get('friend')
+        print(friend)
 
         with sqlite3.connect('memory.db') as conn:
             cursor = conn.cursor()
@@ -248,10 +254,12 @@ def myprofile():
         # print(exists1)
         # print(username, ' | ', email)
         # , username = username, email = email
+
         return render_template("myprofile.html", name=session['name'].capitalize(), username=username, email=email,
                                university=session['university'], birthday=session['birthday'],
                                hometown=session['hometown'], photo=session['photo'],
-                               status=session['status'], age=session['age'], rows=count_friends(), friends=friends_list()
+                               status=session['status'], age=session['age'], rows=count_friends(),
+                               friends=friends_list(), feed=post_feed(), image=post_image(), user=post_user()
                                )
     else:
         return redirect('/')
@@ -287,6 +295,73 @@ def search():
         return redirect('/')
 
 
+def post_feed():
+    with sqlite3.connect('memory.db') as conn:
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM posts")
+        rows = cursor.fetchall()
+        for row in rows:
+            feed = row[0]
+            # print(feed)
+            yield feed
+
+
+def post_image():
+    with sqlite3.connect('memory.db') as conn:
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM posts")
+        rows = cursor.fetchall()
+        for row in rows:
+            image = row[1]
+            # print(image)
+            yield image
+
+
+def post_user():
+    with sqlite3.connect('memory.db') as conn:
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM posts")
+        rows = cursor.fetchall()
+        for row in rows:
+            user = row[2]
+            # print(user)
+            yield user
+
+
+# @app.route('/user', methods=['GET'])
+# @app.route('/user')
+# def user():
+#     if 'user_id' in session:
+#         session['logged_in'] = True
+#         user = session['name']
+# friend = session['friend']
+
+# print(user)
+# print(friend)
+
+# with sqlite3.connect('memory.db') as conn:
+#     cursor = conn.cursor()
+# cursor.execute('''SELECT * FROM users WHERE name=?''', (friend,))
+# exists1 = cursor.fetchall()
+# if exists1:
+#     name_friend = exists1[0][1]
+#     email_friend = exists1[0][2]
+#     university_friend = exists1[0][4]
+#     birthday_friend = exists1[0][5]
+#     age_friend = exists1[0][6]
+#     hometown_friend = exists1[0][7]
+#     photo_friend = exists1[0][8]
+#     status_friend = exists1[0][9]
+#
+#         return render_template("user.html", user=user, name=name_friend, email=email_friend,
+#                                university=university_friend, birthday=birthday_friend,
+#                                hometown=age_friend,
+#                                photo=hometown_friend, age=photo_friend,
+#                                status=status_friend)
+# else:
+#     return redirect('/')
+
+
 @app.route('/user')
 def user():
     if 'user_id' in session:
@@ -313,6 +388,7 @@ def count_friends():
         rows = count[0]
         return rows
 
+
 def friends_list():
     with sqlite3.connect('memory.db') as conn:
         cursor = conn.cursor()
@@ -322,6 +398,7 @@ def friends_list():
         for row in rows:
             friends = row[0]
             yield friends
+
 
 @app.route('/follow_friend', methods=['POST'])
 def follow_friend():
@@ -370,7 +447,9 @@ def add_post():
 
         with sqlite3.connect('memory.db') as conn:
             cursor = conn.cursor()
-            cursor.execute("""INSERT INTO posts(feeds, photo, user) VALUES ('{}', '{}', '{}')""".format(feeds, image.filename, name))
+            cursor.execute(
+                """INSERT INTO posts(feeds, photo, user) VALUES ('{}', '{}', '{}')""".format(feeds, image.filename,
+                                                                                             name))
             # cursor.execute("""INSERT INTO posts(photo, user) VALUES ('{}', '{}')""".format(image.filename, name))
             conn.commit()
 
@@ -380,5 +459,40 @@ def add_post():
         return redirect('/')
 
 
+@app.route('/messages')
+def messages():
+    if 'user_id' in session:
+        session['logged_in'] = True
+        name = session['name']
+        # room = session['room']
+
+        return render_template('messages.html', name=name)
+
+    else:
+        return redirect('/')
+
+
+@socketio.on('send_message')
+def handle_send_message_event(data):
+    app.logger.info("{} has sent message to the room {}: {}".format(data['name'],
+                                                                    data['room'],
+                                                                    data['message']))
+    socketio.emit('receive_message', data, room=data['room'])
+
+
+@socketio.on('join_room')
+def handle_join_room_event(data):
+    app.logger.info("{} has joined the room {}".format(data['name'], data['room']))
+    join_room(data['room'])
+    socketio.emit('join_room_announcement', data)
+
+
+@socketio.on('leave_room')
+def handle_leave_room_event(data):
+    app.logger.info("{} has left the room {}".format(data['name'], data['room']))
+    leave_room(data['room'])
+    socketio.emit('leave_room_announcement', data, room=data['room'])
+
+
 if __name__ == '__main__':
-    app.run(debug=True)
+    socketio.run(app, debug=True)

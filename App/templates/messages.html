@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+      <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+
+    <title>Hello, world!</title>
+  </head>
+<body>
+
+    <div class="bg-nav text-light d-flex flex-column flex-md-row align-items-center p-3 px-md-4 mb-3 bg-white border-bottom shadow-sm">
+      <a class="my-1 mr-md-auto font-weight-normal font-size:40px text-light" href="/home">Физтехграм</a>
+
+      <div class="my-1 mr-md-auto font-weight-normal font-size:40px text-light">
+          <div class="search">
+              <form class="form" method="post" action="/search">
+                  <input type="text" class="searchTerm" placeholder="What are you looking for?" name="name">
+                  <button type="submit" class="searchButton">
+                       <i class="fa fa-search"></i>
+                </button>
+              </form>
+          </div>
+      </div>
+
+      <nav class="my-2 my-md-0 mr-md-3 text-light">
+          {% if session['logged_in'] %}
+        <a class="p-2 text-dark">{{ name }}</a>
+          {% endif %}
+        <a class="p-2 text-light btn" href="/home">Home</a>
+          <a class="p-2 text-light btn" href="/messages">messages</a>
+        <a class="p-2 text-light btn" href="/myprofile">My profile</a>
+        <a class="p-2 text-light btn " href="/settings">Settings</a>
+      </nav>
+      <a class="text-dark btn btn-outline-primary" href="/logout">Logout</a>
+    </div>
+
+<!--    write here your design. check the video from 34:00 till 41:00-->
+
+
+<!--    <img src="{{ url_for('.static', filename='images/{{ photo }}') }}" width="200" height="200">-->
+<!--    <img src="{{ url_for('.static', filename='images/IMG_2165.JPG') }}" width="200" height="200">-->
+<!--<img src="/static/images/IMG_2165.JPG" width="200" height="80">-->
+    <div id="messages"></div>
+    <form id="message_input_form">
+        <input type="text" id="message_input" placeholder="Enter your message here">
+        <button type="submit">Send</button>
+    </form>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js"></script>
+    <script>
+
+        const socket = io.connect("http://127.0.0.1:5000");
+
+        socket.on('connect', function () {
+        socket.emit('join_room', {
+            name: "{{ name }}",
+            room: "{{ room }}"
+            })
+
+        let message_input = document.getElementById('message_input');
+
+        document.getElementById('message_input_form').onsubmit = function (e) {
+            e.preventDefault();
+            let message = message_input.value.trim();
+            if (message.length) {
+                    socket.emit('send_message', {
+                    name: "{{ name }}",
+                    room: "{{ room }}",
+                    message: message
+                })
+            }
+            message_input.value = '';
+            message_input.focus();
+        }
+    });
+
+         window.onbeforeunload = function () {
+         socket.emit('leave_room', {
+            name: "{{ name }}",
+            room: "{{ room }}"
+        })
+    };
+
+        socket.on('receive_message', function (data) {
+        console.log(data);
+        const newNode = document.createElement('div');
+        newNode.innerHTML = `<b>${data.name}:&nbsp;</b> ${data.message}`;
+        document.getElementById('messages').appendChild(newNode);
+    });
+
+        socket.on('join_room_announcement', function (data) {
+        console.log(data);
+        const newNode = document.createElement('div');
+        newNode.innerHTML = `<b>${data.name}</b> has joined the room`;
+        document.getElementById('messages').appendChild(newNode);
+
+    });
+
+        socket.on('leave_room_announcement', function (data) {
+        console.log(data);
+        const newNode = document.createElement('div');
+        newNode.innerHTML = `<b>${data.name}</b> has left the room`;
+        document.getElementById('messages').appendChild(newNode);
+    });
+    </script>
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js" integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV" crossorigin="anonymous"></script>
+
+</body>
+</html>

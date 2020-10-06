@@ -33,6 +33,7 @@
         <a class="p-2 text-dark">{{ name }}</a>
           {% endif %}
         <a class="p-2 text-light btn" href="/home">Home</a>
+        <a class="p-2 text-light btn" href="/messages">messages</a>
         <a class="p-2 text-light btn" href="/myprofile">My profile</a>
         <a class="p-2 text-light btn " href="/settings">Settings</a>
       </nav>
@@ -44,6 +45,7 @@
     <div class="col-md-4">
           <div class="card mt-200">
             <div class="card-body">
+                <img src="/static/images/{{ photo }}" width="180" height="180"><br>
                 <label>Username:</label> <label> {{ name }} </label><br><br>
                 <label>Status:</label> <label> {{ status }} </label><br><br>
                 <label>Age:</label> <label> {{ age }} </label><br><br>
@@ -57,8 +59,11 @@
 
     <label>Friends </label> <label> ({{ rows }}) </label><br><br>
 <!--                            <p class="mt-2"> <a href="/user"> {{ friends }}</a></p>-->
-    {%- for item in friends %}
-        <p class="mt-2"> <a href="/user"> {{ item }} </a></p> {% if not loop.last %},{% endif %}
+<!--    <form class="form" method="post" action="/user">-->
+    {%- for friend in friends %}
+        <p class="mt-2"> <a href="/user"> {{ friend }} </a></p> {% if not loop.last %},{% endif %}
+<!--                  <input type="submit" class="searchTerm" placeholder="What are you looking for?" name="friend">-->
+<!--                          <button type="submit" class="searchButton">-->
     {%- endfor %}
 
 
@@ -66,7 +71,6 @@
 <!--    <img src="{{ url_for('.static', filename='images/IMG_2165.JPG') }}" width="200" height="200">-->
 <!--<img src="/static/images/IMG_2165.JPG" width="200" height="80">-->
 
-    <img src="/static/images/{{ photo }}" width="180" height="180">
 
     <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->

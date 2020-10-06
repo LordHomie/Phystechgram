@@ -22,13 +22,16 @@
       <a class="my-1 mr-md-auto font-weight-normal font-size:40px text-light" href="/home">Физтехграм</a>
 
       <div class="my-1 mr-md-auto font-weight-normal font-size:40px text-light">
-          <div class="search">
-              <form class="form" method="post" action="/search">
-                  <input type="text" class="searchTerm" placeholder="What are you looking for?" name="name">
+          <div class="form">
+              <form class="search" method="post" action="/search">
+                  <input type="text"  id='search' class="searchTerm" placeholder="What are you looking for?" name="name">
                   <button type="submit" class="searchButton">
                        <i class="fa fa-search"></i>
                 </button>
               </form>
+<!--              if(search.value.length) {-->
+
+<!--              }-->
           </div>
       </div>
 
@@ -37,6 +40,7 @@
                 <a class="p-2 text-dark">{{ name }}</a>
             {% endif %}
         <a class="p-2 text-light btn" href="/home">Home</a>
+        <a class="p-2 text-light btn" href="/messages">messages</a>
         <a class="p-2 text-light btn" href="/myprofile">My profile</a>
         <a class="p-2 text-light btn " href="/settings">Settings</a>
       </nav>
@@ -66,7 +70,17 @@
 <!--          </svg>-->
 <!--        </button>-->
 
+    {%- for item1 in user %}
+            {%- for item2 in feed %}
+                {%- for item3 in image %}
+        {{ item1 }} {% if not loop.last %},{% endif %}<br>
+                {{ item2 }} {% if not loop.last %},{% endif %}<br>
+                    <img src="/static/images/{{ item3 }}" width="180" height="180"><br>  {% if not loop.last %},{% endif %}<br><br>
 
+
+    {%- endfor %}
+    {%- endfor %}
+    {%- endfor %}
 
 <!--    write here your design. check the video from 34:00 till 41:00-->
 
