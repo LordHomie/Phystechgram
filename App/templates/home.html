@@ -70,16 +70,14 @@
 <!--          </svg>-->
 <!--        </button>-->
     {% for item1 in user %}
-            {{ item1 }} {% if not loop.last %} {% endif %}<br>
-    {% endfor %}
-
             {% for item2 in feed %}
-                     {{ item2 }} {% if not loop.last %} {% endif %}<br>
-    {% endfor %}
-
                 {% for item3 in image %}
+        {{ item1 }} {% if not loop.last %} {% endif %}<br>
+                 {{ item2 }} {% if not loop.last %} {% endif %}<br>
                     <img src="/static/images/{{ item3 }}" width="180" height="180"><br>  {% if not loop.last %} {% endif %}<br><br>
 
+    {% endfor %}
+    {% endfor %}
     {% endfor %}
 
 <!--    write here your design. check the video from 34:00 till 41:00-->
