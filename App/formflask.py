@@ -329,40 +329,6 @@ def post_user():
             yield user
 
 
-# @app.route('/user', methods=['GET'])
-# @app.route('/user')
-# def user():
-#     if 'user_id' in session:
-#         session['logged_in'] = True
-#         user = session['name']
-# friend = session['friend']
-
-# print(user)
-# print(friend)
-
-# with sqlite3.connect('memory.db') as conn:
-#     cursor = conn.cursor()
-# cursor.execute('''SELECT * FROM users WHERE name=?''', (friend,))
-# exists1 = cursor.fetchall()
-# if exists1:
-#     name_friend = exists1[0][1]
-#     email_friend = exists1[0][2]
-#     university_friend = exists1[0][4]
-#     birthday_friend = exists1[0][5]
-#     age_friend = exists1[0][6]
-#     hometown_friend = exists1[0][7]
-#     photo_friend = exists1[0][8]
-#     status_friend = exists1[0][9]
-#
-#         return render_template("user.html", user=user, name=name_friend, email=email_friend,
-#                                university=university_friend, birthday=birthday_friend,
-#                                hometown=age_friend,
-#                                photo=hometown_friend, age=photo_friend,
-#                                status=status_friend)
-# else:
-#     return redirect('/')
-
-
 @app.route('/user')
 def user():
     if 'user_id' in session:
