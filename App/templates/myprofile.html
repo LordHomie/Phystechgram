@@ -60,12 +60,11 @@
     <label>Friends </label> <label> ({{ rows }}) </label><br><br>
 <!--                            <p class="mt-2"> <a href="/user"> {{ friends }}</a></p>-->
 <!--    <form class="form" method="post" action="/user">-->
-    {%- for friend in friends %}
-        <p class="mt-2"> <a href="/user"> {{ friend }} </a></p> {% if not loop.last %},{% endif %}
+    {%- for user in friends %}
+        <p class="mt-2" > <a href="/user?id={{ user }}" id ={{user}}> {{ user }} </a></p> {% if not loop.last %},{% endif %}
 <!--                  <input type="submit" class="searchTerm" placeholder="What are you looking for?" name="friend">-->
 <!--                          <button type="submit" class="searchButton">-->
     {%- endfor %}
-
 
 <!--    <img src="{{ url_for('.static', filename='images/{{ photo }}') }}" width="200" height="200">-->
 <!--    <img src="{{ url_for('.static', filename='images/IMG_2165.JPG') }}" width="200" height="200">-->

@@ -30,7 +30,7 @@
 
       <nav class="my-2 my-md-0 mr-md-3 text-light">
           {% if session['logged_in'] %}
-        <a class="p-2 text-dark">{{ user }}</a>
+        <a class="p-2 text-dark">{{ name }}</a>
           {% endif %}
         <a class="p-2 text-light btn" href="/home">Home</a>
         <a class="p-2 text-light btn" href="/messages">messages</a>
@@ -46,7 +46,7 @@
           <div class="card mt-200">
             <div class="card-body">
                 <img src="/static/images/{{ photo }}" width="180" height="180"><br>
-                <label>Username:</label> <label> {{ name }} </label><br><br>
+                <label>Username:</label> <label> {{ user }} </label><br><br>
                 <label>Status:</label> <label> {{ status }} </label><br><br>
                 <label>Age:</label> <label> {{ age }} </label><br><br>
                 <label>Birthday:</label> <label> {{ birthday }} </label><br><br>

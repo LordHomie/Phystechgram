@@ -235,8 +235,6 @@ def add_picture():
 def myprofile():
     if 'user_id' in session:
         session['logged_in'] = True
-        friend = request.form.get('friend')
-        print(friend)
 
         with sqlite3.connect('memory.db') as conn:
             cursor = conn.cursor()
@@ -269,11 +267,12 @@ def myprofile():
 def search():
     if 'user_id' in session:
         session['logged_in'] = True
-        session['name_search'] = request.form.get('name')
-        user = session['name']
+        name = session['name']
+        user_search = request.form.get('name')
+        print(user_search)
         with sqlite3.connect('memory.db') as conn:
             cursor = conn.cursor()
-        cursor.execute('''SELECT * FROM users WHERE name=?''', (session['name_search'],))
+        cursor.execute('''SELECT * FROM users WHERE name=?''', (user_search,))
         exists1 = cursor.fetchall()
         if exists1:
             session['name_search'] = exists1[0][1]
@@ -284,7 +283,9 @@ def search():
             session['hometown_search'] = exists1[0][7]
             session['photo_search'] = exists1[0][8]
             session['status_search'] = exists1[0][9]
-            return render_template("search.html", user=user, name=session['name_search'].capitalize(),
+            # room = session['name_search']
+            # print(room)
+            return render_template("search.html", name=name, user_search=user_search,
                                    university=session['university_search'], hometown=session['hometown_search'],
                                    photo=session['photo_search'], age=session['age_search'])
         else:
@@ -366,15 +367,29 @@ def post_user():
 def user():
     if 'user_id' in session:
         session['logged_in'] = True
-        user = session['name']
-        session['name_search'] = request.form.get('name')
+        name = session['name']
+        user = request.args.get('id')
+        print(user)
 
-        return render_template("user.html", user=user, name=session['name_search'], email=session['email_search'],
-                               university=session['university_search'], birthday=session['birthday_search'],
-                               hometown=session['hometown_search'],
-                               photo=session['photo_search'], age=session['age_search'],
-                               status=session['status_search'])
-        # redirect('/home')
+        with sqlite3.connect('memory.db') as conn:
+            cursor = conn.cursor()
+        cursor.execute('''SELECT * FROM users WHERE name=?''', (user,))
+        exists1 = cursor.fetchall()
+        if exists1:
+            session['name_user'] = exists1[0][1]
+            session['email_user'] = exists1[0][2]
+            session['university_user'] = exists1[0][4]
+            session['birthday_user'] = exists1[0][5]
+            session['age_user'] = exists1[0][6]
+            session['hometown_user'] = exists1[0][7]
+            session['photo_user'] = exists1[0][8]
+            session['status_user'] = exists1[0][9]
+
+        return render_template("user.html", name=name, user=session['name_user'], email=session['email_user'],
+                               university=session['university_user'], birthday=session['birthday_user'],
+                               hometown=session['hometown_user'],
+                               photo=session['photo_user'], age=session['age_user'],
+                               status=session['status_user'])
     else:
         return redirect('/')
 
@@ -464,7 +479,10 @@ def messages():
     if 'user_id' in session:
         session['logged_in'] = True
         name = session['name']
-        # room = session['room']
+        # name_search = request.form.get('name_search')
+        # print(name_search)
+        # room = request.form.get('room')
+        # print(room)
 
         return render_template('messages.html', name=name)
 
@@ -482,7 +500,7 @@ def handle_send_message_event(data):
 
 @socketio.on('join_room')
 def handle_join_room_event(data):
-    app.logger.info("{} has joined the room {}".format(data['name'], data['room']))
+    app.logger.info("{} has joined the room with {}".format(data['name'], data['room']))
     join_room(data['room'])
     socketio.emit('join_room_announcement', data)
 

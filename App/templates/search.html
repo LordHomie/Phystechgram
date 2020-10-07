@@ -30,7 +30,7 @@
 
       <nav class="my-2 my-md-0 mr-md-3 text-light">
           {% if session['logged_in'] %}
-        <a class="p-2 text-dark">{{ user }}</a>
+        <a class="p-2 text-dark">{{ name }}</a>
           {% endif %}
         <a class="p-2 text-light btn" href="/home">Home</a>
         <a class="p-2 text-light btn" href="/messages">messages</a>
@@ -43,7 +43,8 @@
 <!--    write here your design. check the video from 34:00 till 41:00-->
     <div class="col-md-4">
         <label> {{ error }} </label><br>
-        <p class="mt-2"> <a href="/user"> {{ name }}</a></p>
+<!--        <p class="mt-2"> <a href="/user?id={{ user_search }} id={{user_search}}"> {{ user_search }}</a></p>-->
+        <p class="mt-2" > <a href="/user?id={{ user_search }}" id ={{user_search}}> {{ user_search }} </a></p>
         <div class="card mt-200">
             <div class="card-body">
 
@@ -62,6 +63,73 @@
         </div>
     </div>
 
+
+
+
+
+
+    <div id="messages"></div>
+    <form id="message_input_form">
+        <input type="text" id="message_input" placeholder="Enter your message here">
+        <button type="submit">Send</button>
+    </form>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js"></script>
+    <script>
+
+        const socket = io.connect("http://127.0.0.1:5000");
+
+        socket.on('connect', function () {
+        socket.emit('join_room', {
+            name: "{{ name }}",
+            room: "{{ room }}"
+            })
+
+        let message_input = document.getElementById('message_input');
+
+        document.getElementById('message_input_form').onsubmit = function (e) {
+            e.preventDefault();
+            let message = message_input.value.trim();
+            if (message.length) {
+                    socket.emit('send_message', {
+                    name: "{{ name }}",
+                    room: "{{ room }}",
+                    message: message
+                })
+            }
+            message_input.value = '';
+            message_input.focus();
+        }
+    });
+
+         window.onbeforeunload = function () {
+         socket.emit('leave_room', {
+            name: "{{ name }}",
+            room: "{{ room }}"
+        })
+    };
+
+        socket.on('receive_message', function (data) {
+        console.log(data);
+        const newNode = document.createElement('div');
+        newNode.innerHTML = `<b>${data.name}:&nbsp;</b> ${data.message}`;
+        document.getElementById('messages').appendChild(newNode);
+    });
+
+        socket.on('join_room_announcement', function (data) {
+        console.log(data);
+        const newNode = document.createElement('div');
+        newNode.innerHTML = `<b>${data.name}</b> has joined the room`;
+        document.getElementById('messages').appendChild(newNode);
+
+    });
+
+        socket.on('leave_room_announcement', function (data) {
+        console.log(data);
+        const newNode = document.createElement('div');
+        newNode.innerHTML = `<b>${data.name}</b> has left the room`;
+        document.getElementById('messages').appendChild(newNode);
+    });
+    </script>
 
     <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
