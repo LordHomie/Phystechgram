@@ -15,38 +15,39 @@ socketio = SocketIO(app)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.secret_key = os.urandom(24)
 
+with sqlite3.connect('memory.db') as conn:
+    conn.execute("PRAGMA foreign_keys = 1")
+    cursor = conn.cursor()
+    # cursor.execute("DROP TABLE IF EXISTS users")
+    # cursor.execute("CREATE TABLE IF NOT EXISTS users "
+    #                "(user_id INTEGER PRIMARY KEY, "
+    #                "name char(50), "
+    #                "email char(50), "
+    #                "password char(30), "
+    #                "university char(50), "
+    #                "birthday char(50), "
+    #                "age char(10), "
+    #                "hometown char(50), "
+    #                "photo, "
+    #                "status char(50), "
+    #                "friends int(1000));")
+    # #
+    # cursor.execute("DROP TABLE IF EXISTS friends")
+    # cursor.execute('''CREATE TABLE IF NOT EXISTS friends
+    # (friend TEXT,
+    # user    TEXT,
+    # FOREIGN KEY (user) REFERENCES users (name))''')
+    # conn.commit()
+    #
+    # cursor.execute("DROP TABLE IF EXISTS posts")
+    # cursor.execute('''CREATE TABLE IF NOT EXISTS posts
+    # (post_id INTEGER PRIMARY KEY,
+    # feeds TEXT,
+    # photo   TEXT,
+    # user    TEXT,
+    # FOREIGN KEY (user) REFERENCES users (name))''')
+    # conn.commit()
 
-# with sqlite3.connect('memory.db') as conn:
-#     conn.execute("PRAGMA foreign_keys = 1")
-#     cursor = conn.cursor()
-#     cursor.execute("DROP TABLE IF EXISTS users")
-#     cursor.execute("CREATE TABLE users "
-#                    "(user_id char(50), "
-#                    "name char(50) PRIMARY KEY, "
-#                    "email char(50), "
-#                    "password char(30), "
-#                    "university char(50), "
-#                    "birthday char(50), "
-#                    "age char(10), "
-#                    "hometown char(50), "
-#                    "photo, "
-#                    "status char(50), "
-#                    "friends int(1000));")
-# # #
-#     cursor.execute("DROP TABLE IF EXISTS friends")
-#     cursor.execute('''CREATE TABLE IF NOT EXISTS friends
-#     (friend TEXT,
-#     user    TEXT,
-#     FOREIGN KEY (user) REFERENCES users (name))''')
-#     conn.commit()
-# # #
-#     cursor.execute("DROP TABLE IF EXISTS posts")
-#     cursor.execute('''CREATE TABLE IF NOT EXISTS posts
-#     (feeds TEXT,
-#     photo   TEXT,
-#     user    TEXT,
-#     FOREIGN KEY (user) REFERENCES users (name))''')
-#     conn.commit()
 
 @app.route('/')
 def login():
@@ -117,20 +118,15 @@ def add_user():
         cursor.execute('''SELECT * FROM users WHERE email=? OR name=?''', (email, name))
         exists = cursor.fetchall()
     if not exists:
-        # userID = cursor.fetchall()
-        # count = 1
-        # for line in userID:
-        # print("Line {}: {}".format(userID, lines.strip()), sep='')
         cursor.execute(
-            """INSERT INTO users(user_id, name, email, password) VALUES (NULL, '{}', '{}', '{}')""".format(name, email,
-                                                                                                           password))
-        # count += 1
+            """INSERT INTO users(name, email, password) VALUES ('{}', '{}', '{}')""".format(name, email, password))
         conn.commit()
 
         cursor.execute('''SELECT * FROM users WHERE email=?''', (email,))
         myuser = cursor.fetchall()
         session['user_id'] = myuser[0][0]
         session['logged_in'] = True
+
         return redirect('/')
     else:
         return redirect('/register')
@@ -268,8 +264,9 @@ def search():
     if 'user_id' in session:
         session['logged_in'] = True
         name = session['name']
-        user_search = request.form.get('name')
-        print(user_search)
+        user_search = request.form.get('user_search')
+        session['user_search'] = user_search
+        print("search function", user_search)
         with sqlite3.connect('memory.db') as conn:
             cursor = conn.cursor()
         cursor.execute('''SELECT * FROM users WHERE name=?''', (user_search,))
@@ -302,7 +299,7 @@ def post_feed():
         cursor.execute("SELECT * FROM posts")
         rows = cursor.fetchall()
         for row in rows:
-            feed = row[0]
+            feed = row[1]
             # print(feed)
             yield feed
 
@@ -313,7 +310,7 @@ def post_image():
         cursor.execute("SELECT * FROM posts")
         rows = cursor.fetchall()
         for row in rows:
-            image = row[1]
+            image = row[2]
             # print(image)
             yield image
 
@@ -324,7 +321,7 @@ def post_user():
         cursor.execute("SELECT * FROM posts")
         rows = cursor.fetchall()
         for row in rows:
-            user = row[2]
+            user = row[3]
             # print(user)
             yield user
 
@@ -335,7 +332,7 @@ def user():
         session['logged_in'] = True
         name = session['name']
         user = request.args.get('id')
-        print(user)
+        print("user function", user)
 
         with sqlite3.connect('memory.db') as conn:
             cursor = conn.cursor()
@@ -386,7 +383,9 @@ def follow_friend():
     if 'user_id' in session:
         session['logged_in'] = True
         name = session['name']
-        name_search = session['name_search']
+        user_search = session['user_search']
+        # name_search = request.args.get('id')
+        print("foolow_friend function", user_search)
         # if name==name_search(done)/ if name_search is none/ if name_search already in friends/ allow multiple names go to the column(done)
 
         with sqlite3.connect('memory.db') as conn:
@@ -398,18 +397,23 @@ def follow_friend():
             # print(name)
             # print(name_search)
 
-            match = (name_search, name)
+            match = (user_search, name)
             if match in exists1:
                 return render_template("search.html")
 
-            elif name == name_search:
+            elif name == user_search:
                 return render_template("search.html")
 
             else:
-                cursor.execute("""INSERT INTO friends(friend, user) VALUES ('{}', '{}')""".format(name_search, name))
-                conn.commit()
-                return redirect('/user')
-
+                cursor.execute('''SELECT * FROM users WHERE name=?''', (user_search,))
+                exists = cursor.fetchall()
+                if exists:
+                    cursor.execute(
+                        """INSERT INTO friends(friend, user) VALUES ('{}', '{}')""".format(user_search, name))
+                    conn.commit()
+                    return render_template('search.html')
+                else:
+                    return render_template('search.html')
     else:
         return redirect('/')
 
@@ -445,6 +449,8 @@ def messages():
     if 'user_id' in session:
         session['logged_in'] = True
         name = session['name']
+        # user=request.args.get("id")
+        # print(user)
         # name_search = request.form.get('name_search')
         # print(name_search)
         # room = request.form.get('room')
@@ -466,8 +472,9 @@ def handle_send_message_event(data):
 
 @socketio.on('join_room')
 def handle_join_room_event(data):
-    app.logger.info("{} has joined the room with {}".format(data['name'], data['room']))
-    join_room(data['room'])
+    app.logger.info("{} has joined the room with {}".format(data['name'], data['user']))
+    join_room(data['name'])
+    join_room(data['user'])
     socketio.emit('join_room_announcement', data)
 
 

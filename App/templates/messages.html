@@ -20,7 +20,7 @@
       <div class="my-1 mr-md-auto font-weight-normal font-size:40px text-light">
           <div class="search">
               <form class="form" method="post" action="/search">
-                  <input type="text" class="searchTerm" placeholder="What are you looking for?" name="name">
+                  <input type="text" class="searchTerm" placeholder="What are you looking for?" name="user_search">
                   <button type="submit" class="searchButton">
                        <i class="fa fa-search"></i>
                 </button>
@@ -59,7 +59,7 @@
         socket.on('connect', function () {
         socket.emit('join_room', {
             name: "{{ name }}",
-            room: "{{ room }}"
+            user: "{{ user }}"
             })
 
         let message_input = document.getElementById('message_input');

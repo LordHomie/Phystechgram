@@ -24,7 +24,7 @@
       <div class="my-1 mr-md-auto font-weight-normal font-size:40px text-light">
           <div class="form">
               <form class="search" method="post" action="/search">
-                  <input type="text"  id='search' class="searchTerm" placeholder="What are you looking for?" name="name">
+                  <input type="text"  id='search' class="searchTerm" placeholder="What are you looking for?" name="user_search">
                   <button type="submit" class="searchButton">
                        <i class="fa fa-search"></i>
                 </button>
@@ -69,18 +69,18 @@
 <!--              <path fill-rule="evenodd" d="M2 4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-1.172a2 2 0 0 1-1.414-.586l-.828-.828A2 2 0 0 0 9.172 2H6.828a2 2 0 0 0-1.414.586l-.828.828A2 2 0 0 1 3.172 4H2zm.5 2a.5.5 0 1 0 0-1 .5.5 0 0 0 0 1zm9 2.5a3.5 3.5 0 1 1-7 0 3.5 3.5 0 0 1 7 0z"></path>-->
 <!--          </svg>-->
 <!--        </button>-->
+    {% for item1 in user %}
+            {{ item1 }} {% if not loop.last %} {% endif %}<br>
+    {% endfor %}
 
-    {%- for item1 in user %}
-            {%- for item2 in feed %}
-                {%- for item3 in image %}
-        {{ item1 }} {% if not loop.last %},{% endif %}<br>
-                {{ item2 }} {% if not loop.last %},{% endif %}<br>
-                    <img src="/static/images/{{ item3 }}" width="180" height="180"><br>  {% if not loop.last %},{% endif %}<br><br>
+            {% for item2 in feed %}
+                     {{ item2 }} {% if not loop.last %} {% endif %}<br>
+    {% endfor %}
 
+                {% for item3 in image %}
+                    <img src="/static/images/{{ item3 }}" width="180" height="180"><br>  {% if not loop.last %} {% endif %}<br><br>
 
-    {%- endfor %}
-    {%- endfor %}
-    {%- endfor %}
+    {% endfor %}
 
 <!--    write here your design. check the video from 34:00 till 41:00-->
 
