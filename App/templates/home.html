@@ -73,9 +73,9 @@
 
 
     {% for post in post %}
-        {{ post[2] }} {% if not loop.last %} {% endif %}<br>
+        <p class="mt-2" > <a href="/user?id={{ post[2] }}" id ={{post[2]}}> {{ post[2] }} </a></p>
             {{ post[0] }} {% if not loop.last %} {% endif %}<br>
-                    <img src="/static/images/{{ post[1] }}" width="180" height="180"><br>  {% if not loop.last %} {% endif %}<br><br>
+                    <img src="/static/images/{{ post[1] }}" width="180" height="180"><br>  {% if not loop.last %} {% endif %}<br><br> {% if not loop.last %} {% endif %}
     {% endfor %}
 
 
