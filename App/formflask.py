@@ -45,7 +45,17 @@ with sqlite3.connect('memory.db') as conn:
     # feeds TEXT,
     # photo   TEXT,
     # user    TEXT,
+    # likes   INTEGER,
     # FOREIGN KEY (user) REFERENCES users (name))''')
+    # conn.commit()
+    #
+    # cursor.execute("DROP TABLE IF EXISTS likers")
+    # cursor.execute('''CREATE TABLE IF NOT EXISTS likers
+    #     (post_id INTEGER,
+    #     user TEXT,
+    #     liked   TEXT,
+    #     FOREIGN KEY (post_id) REFERENCES posts (post_id),
+    #     FOREIGN KEY (user) REFERENCES users (name))''')
     # conn.commit()
 
 
@@ -298,10 +308,24 @@ def post():
         cursor.execute("SELECT * FROM posts")
         rows = cursor.fetchall()
         for row in rows:
+            post_id = row[0]
             feed = row[1]
             image = row[2]
             user = row[3]
-            yield feed, image, user
+            likes = row[4]
+            yield post_id, feed, image, user, likes
+
+
+# def post_id():
+# with sqlite3.connect('memory.db') as conn:
+#     cursor = conn.cursor()
+#     cursor.execute("SELECT * FROM posts")
+#     rows = cursor.fetchall()
+#     post_id_list = []
+#     for item in rows:
+#         id = item[0]
+#         post_id_list.append(id)
+#     print(*post_id_list)
 
 @app.route('/user')
 def user():
@@ -410,8 +434,9 @@ def add_post():
         with sqlite3.connect('memory.db') as conn:
             cursor = conn.cursor()
             cursor.execute(
-                """INSERT INTO posts(feeds, photo, user) VALUES ('{}', '{}', '{}')""".format(feeds, image.filename,
-                                                                                             name))
+                """INSERT INTO posts(feeds, photo, user, likes) VALUES ('{}', '{}', '{}', '{}')""".format(feeds,
+                                                                                                          image.filename,
+                                                                                                          name, 0))
             # cursor.execute("""INSERT INTO posts(photo, user) VALUES ('{}', '{}')""".format(image.filename, name))
             conn.commit()
 
@@ -419,6 +444,39 @@ def add_post():
 
     else:
         return redirect('/')
+
+
+@app.route('/like_action')
+def like_action():
+    with sqlite3.connect('memory.db') as conn:
+        cursor = conn.cursor()
+        name = session['name']
+
+    # if action == 'like':
+
+        post_id = request.args.get('id')
+        print("post_id is: ", post_id)
+        cursor.execute('''SELECT * FROM likers WHERE post_id=? and user=?''', (post_id, name))
+        exists = cursor.fetchall()
+        if exists:
+            return redirect('/home')
+        else:
+            cursor.execute(
+                """INSERT INTO likers (post_id, user, liked) VALUES ('{}', '{}', '{}')""".format(post_id, name, 'True'))
+            conn.commit()
+
+            cursor.execute('''SELECT * FROM posts WHERE post_id=?''', (post_id,))
+            exists = cursor.fetchall()
+            print("likes: ", exists[0][4])
+            it = exists[0][4]
+            it += 1
+            cursor.execute('''UPDATE posts SET likes=? WHERE post_id=?''', (it, post_id))
+            conn.commit()
+
+    # if action == 'unlike':
+    #     cursor.execute('''UPDATE posts SET likes=? WHERE posts_id=?''', (1, post_id))
+    #     conn.commit()
+    return redirect('/home')
 
 
 @app.route('/messages')

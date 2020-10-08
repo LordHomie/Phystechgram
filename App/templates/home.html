@@ -73,12 +73,14 @@
 
 
     {% for post in post %}
-        <p class="mt-2" > <a href="/user?id={{ post[2] }}" id ={{post[2]}}> {{ post[2] }} </a></p>
-            {{ post[0] }} {% if not loop.last %} {% endif %}<br>
-                    <img src="/static/images/{{ post[1] }}" width="180" height="180"><br>  {% if not loop.last %} {% endif %}<br><br> {% if not loop.last %} {% endif %}
+        <p class="mt-2" > <a href="/user?id={{ post[3] }}" id ={{post[3]}}>&nbsp; {{ post[3] }} </a></p>
+            &nbsp; {{ post[1] }} {% if not loop.last %} {% endif %}<br>
+                    &nbsp; <img src="/static/images/{{ post[2] }}" width="180" height="180">
+                        <p class="mt-2" > <a href="/like_action?id={{ post[0] }}" id ={{post[0]}}>&nbsp; like </a>&nbsp; This post was like by {{ post[4] }} people</p> <br><br>
+
+
+    {% if not loop.last %} {% endif %}
     {% endfor %}
-
-
 
 
     <!-- Optional JavaScript -->
