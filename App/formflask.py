@@ -57,7 +57,15 @@ with sqlite3.connect('memory.db') as conn:
     #     FOREIGN KEY (post_id) REFERENCES posts (post_id),
     #     FOREIGN KEY (user) REFERENCES users (name))''')
     # conn.commit()
-
+    #
+    # cursor.execute("DROP TABLE IF EXISTS comments")
+    # cursor.execute('''CREATE TABLE IF NOT EXISTS comments
+    #         (post_id INTEGER,
+    #         user TEXT,
+    #         comment   TEXT,
+    #         FOREIGN KEY (post_id) REFERENCES posts (post_id),
+    #         FOREIGN KEY (user) REFERENCES users (name))''')
+    # conn.commit()
 
 @app.route('/')
 def login():
@@ -74,7 +82,7 @@ def home():
     if 'user_id' in session:
         session['logged_in'] = True
         # return render_template("home.html", name=session['name'].capitalize())
-        return render_template("home.html", name=session['name'].capitalize(), post=post())
+        return render_template("home.html", name=session['name'].capitalize(), post=post(), show_comments=show_comments())
     else:
         return redirect('/')
 
@@ -262,7 +270,7 @@ def myprofile():
                                university=session['university'], birthday=session['birthday'],
                                hometown=session['hometown'], photo=session['photo'],
                                status=session['status'], age=session['age'], rows=count_friends(),
-                               friends=friends_list(), feed=post_feed(), image=post_image(), user=post_user()
+                               friends=friends_list()
                                )
     else:
         return redirect('/')
@@ -477,6 +485,37 @@ def like_action():
     #     cursor.execute('''UPDATE posts SET likes=? WHERE posts_id=?''', (1, post_id))
     #     conn.commit()
     return redirect('/home')
+
+
+@app.route('/comment_action', methods=['POST'])
+def comment_action():
+    if 'user_id' in session:
+        session['logged_in'] = True
+        name = session['name']
+        post_id = request.form.get('post_id')
+        comment = request.form.get('comment')
+
+        with sqlite3.connect('memory.db') as conn:
+            cursor = conn.cursor()
+            cursor.execute(
+                """INSERT INTO comments(post_id, user, comment) VALUES ('{}', '{}', '{}')""".format(post_id, name, comment))
+            conn.commit()
+            return redirect('/home')
+
+    else:
+        return redirect('/')
+
+
+def show_comments():
+    with sqlite3.connect('memory.db') as conn:
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM comments")
+        rows = cursor.fetchall()
+        for row in rows:
+            post_id = row[0]
+            user = row[1]
+            comment = row[2]
+            yield post_id, user, comment
 
 
 @app.route('/messages')

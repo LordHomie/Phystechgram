@@ -71,18 +71,22 @@
 <!--        </button>-->
 
 
-
     {% for post in post %}
         <p class="mt-2" > <a href="/user?id={{ post[3] }}" id ={{post[3]}}>&nbsp; {{ post[3] }} </a></p>
-            &nbsp; {{ post[1] }} {% if not loop.last %} {% endif %}<br>
-                    &nbsp; <img src="/static/images/{{ post[2] }}" width="180" height="180">
-                        <p class="mt-2" > <a href="/like_action?id={{ post[0] }}" id ={{post[0]}}>&nbsp; like </a>&nbsp; This post was like by {{ post[4] }} people</p> <br><br>
+        &nbsp; {{ post[1] }} {% if not loop.last %} {% endif %}<br>
+        &nbsp; <img src="/static/images/{{ post[2] }}" width="180" height="180">
+        <p class="mt-2" > <a href="/like_action?id={{ post[0] }}" id ={{post[0]}}>&nbsp; like </a>&nbsp; This post was like by {{ post[4] }} people</p>
+
+        <form class="comment" method="post" action="/comment_action">
+              <input type="text"  id="comment"  class="comment" placeholder="Write something..." name="comment">
+            <button class="btn btn-danger" type="submit" name="post_id" value="{{ post[0] }}"></button>
+<!--         to submit without a button           <div id="{{post[0]}}" onClick="addLike(this.id)"></div>-->
+        </form>
+        <br><br>
 
 
     {% if not loop.last %} {% endif %}
     {% endfor %}
-
-
     <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
