@@ -48,10 +48,10 @@
     </div>
 
         <form class="form" method="post" action="/add_post" enctype="multipart/form-data">
-            <input name="feeds" id="comments" placeholder="Hey... say something!" style="width:40%;height:60px;padding:3%;font:1.4em/1.6em cursive;background: linear-gradient(to right, #00dbde, #fc00ff);color:black;">
+            &nbsp; <input name="feeds" id="comments" placeholder="Hey... say something!" style="width:40%;height:60px;padding:3%;font:1.4em/1.6em cursive;background: linear-gradient(to right, #00dbde, #fc00ff);color:black;">
             <p><input type="file"  accept="image/*" class="form-control" name="file" id="file" onchange="loadFile(event)" style="display: none;"></p>
-            <p><label for="file" style="cursor: pointer;">Click here to upload picture</label></p>
-            <input type=submit value=Submit>
+            <p><label for="file" style="cursor: pointer;">&nbsp; Click here to upload picture</label></p>
+            &nbsp; <input type=submit value=Submit>
             <p><img id="output" width="200" /></p>
         </form>
 
@@ -78,10 +78,15 @@
         <p class="mt-2" > <a href="/like_action?id={{ post[0] }}" id ={{post[0]}}>&nbsp; like </a>&nbsp; This post was like by {{ post[4] }} people</p>
 
         <form class="comment" method="post" action="/comment_action">
-              <input type="text"  id="comment"  class="comment" placeholder="Write something..." name="comment">
-            <button class="btn btn-danger" type="submit" name="post_id" value="{{ post[0] }}"></button>
+              &nbsp; <input type="text"  id="comment"  class="comment" placeholder="Write something..." name="comment">
+              <button class="btn btn-danger" type="submit" name="post_id" value="{{ post[0] }}"></button>
 <!--         to submit without a button           <div id="{{post[0]}}" onClick="addLike(this.id)"></div>-->
         </form>
+
+        {% for comment in show_comments %}
+            <p class="mt-2" > <a href="/user?id={{ comment[1] }}" id ={{comment[1]}}> &nbsp; {{ comment[1] }}: </a> &nbsp;{{ comment[2] }} </p>
+        {% endfor %}
+
         <br><br>
 
 

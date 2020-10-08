@@ -463,7 +463,7 @@ def like_action():
     # if action == 'like':
 
         post_id = request.args.get('id')
-        print("post_id is: ", post_id)
+        # print("post_id is: ", post_id)
         cursor.execute('''SELECT * FROM likers WHERE post_id=? and user=?''', (post_id, name))
         exists = cursor.fetchall()
         if exists:
@@ -475,7 +475,7 @@ def like_action():
 
             cursor.execute('''SELECT * FROM posts WHERE post_id=?''', (post_id,))
             exists = cursor.fetchall()
-            print("likes: ", exists[0][4])
+            # print("likes: ", exists[0][4])
             it = exists[0][4]
             it += 1
             cursor.execute('''UPDATE posts SET likes=? WHERE post_id=?''', (it, post_id))
