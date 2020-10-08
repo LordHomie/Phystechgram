@@ -64,8 +64,7 @@ def home():
     if 'user_id' in session:
         session['logged_in'] = True
         # return render_template("home.html", name=session['name'].capitalize())
-        return render_template("home.html", name=session['name'].capitalize(), feed=post_feed(), image=post_image(),
-                               user=post_user())
+        return render_template("home.html", name=session['name'].capitalize(), post=post())
     else:
         return redirect('/')
 
@@ -293,38 +292,16 @@ def search():
         return redirect('/')
 
 
-def post_feed():
+def post():
     with sqlite3.connect('memory.db') as conn:
         cursor = conn.cursor()
         cursor.execute("SELECT * FROM posts")
         rows = cursor.fetchall()
         for row in rows:
             feed = row[1]
-            # print(feed)
-            yield feed
-
-
-def post_image():
-    with sqlite3.connect('memory.db') as conn:
-        cursor = conn.cursor()
-        cursor.execute("SELECT * FROM posts")
-        rows = cursor.fetchall()
-        for row in rows:
             image = row[2]
-            # print(image)
-            yield image
-
-
-def post_user():
-    with sqlite3.connect('memory.db') as conn:
-        cursor = conn.cursor()
-        cursor.execute("SELECT * FROM posts")
-        rows = cursor.fetchall()
-        for row in rows:
             user = row[3]
-            # print(user)
-            yield user
-
+            yield feed, image, user
 
 @app.route('/user')
 def user():
