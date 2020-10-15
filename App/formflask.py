@@ -4,6 +4,7 @@ import base64
 # from config import secret_key
 import sqlite3
 import os
+import uuid
 from datetime import date
 from werkzeug.utils import secure_filename
 
@@ -67,6 +68,7 @@ with sqlite3.connect('memory.db') as conn:
     #         FOREIGN KEY (user) REFERENCES users (name))''')
     # conn.commit()
 
+
 @app.route('/')
 def login():
     return render_template('login.html')
@@ -76,13 +78,14 @@ def login():
 def register():
     return render_template('register.html')
 
-
 @app.route('/home')
 def home():
     if 'user_id' in session:
         session['logged_in'] = True
+
         # return render_template("home.html", name=session['name'].capitalize())
-        return render_template("home.html", name=session['name'].capitalize(), post=post(), show_comments=show_comments())
+        return render_template("home.html", name=session['name'].capitalize(), post=post(),
+                               show_comments=list(show_comments()))
     else:
         return redirect('/')
 
@@ -460,7 +463,7 @@ def like_action():
         cursor = conn.cursor()
         name = session['name']
 
-    # if action == 'like':
+        # if action == 'like':
 
         post_id = request.args.get('id')
         # print("post_id is: ", post_id)
@@ -498,7 +501,8 @@ def comment_action():
         with sqlite3.connect('memory.db') as conn:
             cursor = conn.cursor()
             cursor.execute(
-                """INSERT INTO comments(post_id, user, comment) VALUES ('{}', '{}', '{}')""".format(post_id, name, comment))
+                """INSERT INTO comments(post_id, user, comment) VALUES ('{}', '{}', '{}')""".format(post_id, name,
+                                                                                                    comment))
             conn.commit()
             return redirect('/home')
 
@@ -530,7 +534,10 @@ def messages():
         # room = request.form.get('room')
         # print(room)
 
-        return render_template('messages.html', name=name)
+        user_search = session['user_search']
+        print(user_search)
+        room = user_search
+        return render_template('messages.html', name=name, room=room)
 
     else:
         return redirect('/')
@@ -543,13 +550,15 @@ def handle_send_message_event(data):
                                                                     data['message']))
     socketio.emit('receive_message', data, room=data['room'])
 
+#
+# try to make the other user receive the message. Figure it out where to change something whether here or in the javascript code + stackoverflow
+#
 
 @socketio.on('join_room')
 def handle_join_room_event(data):
-    app.logger.info("{} has joined the room with {}".format(data['name'], data['user']))
-    join_room(data['name'])
-    join_room(data['user'])
-    socketio.emit('join_room_announcement', data)
+    app.logger.info("{} has joined the room with {}".format(data['name'], data['room']))
+    join_room(data['room'])
+    socketio.emit('join_room_announcement', data, room=data['room'])
 
 
 @socketio.on('leave_room')

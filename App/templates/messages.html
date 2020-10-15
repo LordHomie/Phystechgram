@@ -59,7 +59,7 @@
         socket.on('connect', function () {
         socket.emit('join_room', {
             name: "{{ name }}",
-            user: "{{ user }}"
+            room: "{{ room }}"
             })
 
         let message_input = document.getElementById('message_input');

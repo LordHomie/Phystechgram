@@ -78,14 +78,17 @@
         <p class="mt-2" > <a href="/like_action?id={{ post[0] }}" id ={{post[0]}}>&nbsp; like </a>&nbsp; This post was like by {{ post[4] }} people</p>
 
         <form class="comment" method="post" action="/comment_action">
-              &nbsp; <input type="text"  id="comment"  class="comment" placeholder="Write something..." name="comment">
+              &nbsp;<input type="text"  id="comment"  class="comment" placeholder="Write something..." name="comment">
               <button class="btn btn-danger" type="submit" name="post_id" value="{{ post[0] }}"></button>
 <!--         to submit without a button           <div id="{{post[0]}}" onClick="addLike(this.id)"></div>-->
         </form>
 
-        {% for comment in show_comments %}
-            <p class="mt-2" > <a href="/user?id={{ comment[1] }}" id ={{comment[1]}}> &nbsp; {{ comment[1] }}: </a> &nbsp;{{ comment[2] }} </p>
-        {% endfor %}
+
+            {% for comment in show_comments %}
+                {% if post[0] == comment[0] %}
+                    <p class="mt-2" > <a href="/user?id={{ comment[1] }}" id ={{comment[1]}}> &nbsp; {{ comment[1] }}: </a> &nbsp;{{ comment[2] }} </p>
+                {% endif %}
+            {% endfor %}
 
         <br><br>
 
