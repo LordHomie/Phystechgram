@@ -7,7 +7,17 @@
 5- Follow this link for the steps:
 https://cloud.google.com/kubernetes-engine/docs/tutorials/hello-app?authuser=1
 
-Note1: Don't forget to use the ID of your own project which is shown up in the website of console.cloud.google.com
+Note1: when you clone to your github repository, type ls
+Then, you will get the existing folders.
+Type: cd "name of the folder"
+
+In this case of Phystechgram, type:
+git clone https://github.com/LordHomie/Phystechgram.git
+ls
+cd Phystechgram/
+
+
+Note2: Don't forget to use the ID of your own project which is shown up in the website of console.cloud.google.com
 
 In this case it will be:
 
@@ -18,13 +28,13 @@ So, just do this only in this area:
 export PROJECT_ID=midyear-pattern-298211
 
 
-Note2: 
+Note3: 
 When reaching to this point "Pushing the Docker image to Container Registry", type this:
 
 gcloud services enable container.googleapis.com
 
 
-Note3: 
+Note4: 
 In this point "Creating a GKE cluster", 
 make the compute/zone to "europe-north1-b" as it's near from Russia.
 

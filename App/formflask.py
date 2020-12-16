@@ -585,4 +585,4 @@ def handle_leave_room_event(data):
 
 if __name__ == '__main__':
     # socketio.run(app, debug=True)
-    socketio.run(app, host="0.0.0.0", debug=True)  # by default port is 5000
+    socketio.run(app, host="0.0.0.0", port=8080, debug=True)  # by default port is 5000
