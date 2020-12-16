@@ -18,8 +18,8 @@ app.secret_key = os.urandom(24)
 
 # database = os.getenv('DATABASE', 'memory.db')
 with sqlite3.connect('memory.db') as conn:
-# conn = sqlite3.connect('memory.db')
-#     conn.execute("PRAGMA foreign_keys = 1")
+    # conn = sqlite3.connect('memory.db')
+    #     conn.execute("PRAGMA foreign_keys = 1")
     cursor = conn.cursor()
     # cursor.execute("DROP TABLE IF EXISTS users")
     cursor.execute("CREATE TABLE IF NOT EXISTS users "
@@ -585,4 +585,7 @@ def handle_leave_room_event(data):
 
 if __name__ == '__main__':
     # socketio.run(app, debug=True)
+
+    # In order to make it run locally in Google cloud, add "port=8080". Only when you want to deploy it to Google cloud!
+    # Otherwise, remove it from the file in order to run it in Pycharm!
     socketio.run(app, host="0.0.0.0", port=8080, debug=True)  # by default port is 5000

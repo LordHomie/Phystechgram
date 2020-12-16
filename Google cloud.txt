@@ -7,9 +7,10 @@
 5- Follow this link for the steps:
 https://cloud.google.com/kubernetes-engine/docs/tutorials/hello-app?authuser=1
 
-Note1: when you clone to your github repository, type ls
-Then, you will get the existing folders.
-Type: cd "name of the folder"
+Note1: when you clone to your github repository, it will be saved in the terminal as a directory.
+
+Type "ls" to show all existing directories.
+Then type, "cd name of the folder"
 
 In this case of Phystechgram, type:
 git clone https://github.com/LordHomie/Phystechgram.git
@@ -17,7 +18,15 @@ ls
 cd Phystechgram/
 
 
-Note2: Don't forget to use the ID of your own project which is shown up in the website of console.cloud.google.com
+Note2: When you reach to the point "Running your container locally (optional)", update this in your python file in order to run it on the port 8000:
+
+# In order to make it run locally in Google cloud, add "port=8080". Only when you want to deploy it to Google cloud!
+# Otherwise, remove it from the file in order to run it in Pycharm!
+socketio.run(app, host="0.0.0.0", port=8080, debug=True)# by default port=5000
+
+
+
+Note3: Don't forget to use the ID of your own project which is shown up in the website of console.cloud.google.com
 
 In this case it will be:
 
@@ -28,13 +37,13 @@ So, just do this only in this area:
 export PROJECT_ID=midyear-pattern-298211
 
 
-Note3: 
+Note4: 
 When reaching to this point "Pushing the Docker image to Container Registry", type this:
 
 gcloud services enable container.googleapis.com
 
 
-Note4: 
+Note5: 
 In this point "Creating a GKE cluster", 
 make the compute/zone to "europe-north1-b" as it's near from Russia.
 
@@ -42,4 +51,9 @@ So, it will be like this:
 gcloud config set compute/zone europe-north1-b
 
 
+
+
+Notes for using Google cloud terminal:
+- To remove a directory, type: "rm -r name_directory/"
+- We don't have to do it locally since it's optional. And because it lags and we can't exit the program using ctrl+c
 
