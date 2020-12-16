@@ -1,0 +1,49 @@
+#
+# Docker compose file running Flask app in development (debug) mode
+# https://docs.docker.com/compose/compose-file/
+#
+version: "3.7"
+services:
+  phystechgram:
+    image: account_checker:latest
+
+    container_name: phystechgram
+    build: .
+    restart: always
+
+    environment:
+      - FLASK_ENV=development
+      - FLASK_APP=/App/formflask.py
+      - DATABASE=/App/memory.db
+
+    ports:
+    - 5000:5000
+
+    volumes:
+    - ./:/App
+
+#  phystechgram:
+#    container_name: homie
+#    image: phystechgram
+#    build: .
+#    restart: always
+#    ports:
+#      - 5000:5000
+#
+#    # Set environment variables
+#    environment:
+#    - FLASK_ENV=development
+#    - FLASK_APP=/App/formflask.py
+#    - DATABASE=/App/memory.db
+#
+#    # Mount entire project into docker container under /App
+#    volumes:
+#      - ./:/App
+#
+#    # Make all ports accessible on host
+#    network_mode: host
+#
+#    # Install requirements and start flask app
+#    entrypoint: >
+#      bash -c "pip install -r /App/requirements.txt
+#      && flask run"

@@ -1,0 +1,35 @@
+
+1- make a google business account if you dont have.
+2- enable billing.
+3- enable billing in Kubernetes.
+4- read the document and deploy a simple hello world program, then do it for your project. In the documentation, start from the point "Building the container image"
+
+5- Follow this link for the steps:
+https://cloud.google.com/kubernetes-engine/docs/tutorials/hello-app?authuser=1
+
+Note1: Don't forget to use the ID of your own project which is shown up in the website of console.cloud.google.com
+
+In this case it will be:
+
+The name of project was "My First Project"
+The ID is midyear-pattern-298211
+
+So, just do this only in this area:
+export PROJECT_ID=midyear-pattern-298211
+
+
+Note2: 
+When reaching to this point "Pushing the Docker image to Container Registry", type this:
+
+gcloud services enable container.googleapis.com
+
+
+Note3: 
+In this point "Creating a GKE cluster", 
+make the compute/zone to "europe-north1-b" as it's near from Russia.
+
+So, it will be like this:
+gcloud config set compute/zone europe-north1-b
+
+
+

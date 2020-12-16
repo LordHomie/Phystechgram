@@ -1,0 +1,98 @@
+1- make sure that you created the requirements.txt file in the project folder. Then, go to terminal in PyCharm and do this:
+
+pip freeze , to show all installed libraries.
+
+pip freeze > requirements.txt , to copy all installed libraries to the text file.
+
+2- make sure that project enviroment is already installed in the folder. To do this, click on right bottom in PyCharm on 
+"Python 3.7 (repository name)" -> interpreter settings ->
+-> a new windows pops up and click on the settingts icon -> 
+-> add new -> then ok -> ok. The enviroment has been made!
+
+3- Set the Dockerfile in the project folder and edit it so that it fits to our project.
+
+4- Using the windows shell, go to the project repository.
+
+step one "building": 
+	     docker build .  (without tag)
+    or    docker build -t phystechgram .  (with tag and use this)
+
+
+step two "showing the ids": docker images
+
+
+step three "running": 
+docker run none_id       (in case we did use tag)
+docker run phystechgram  (in case we used tag)
+
+step "four": copy for example "http://127.0.0.1:5000/" and load it in the browser.
+
+
+
+important notes:
+
+- change the python file ( the host thing -> host="0.0.0.0" )
+-change the docker file (check the telegram group for the changes)
+- 2 commandlines for showing containers "docker ps" and images "docker images"
+
+- 2 commandlines for deleting containers 
+"docker rm -f $(docker ps -a -q)" 
+and images "docker rmi $(docker images -q)"
+
+- 2 commandlines for building as usual,
+ and running "docker run -p 5000:5000 name_of_tag"
+
+
+
+
+- Copy the docker compose file to the project directory where we save the docker file. Change things in the file as you like.
+Go to Windows shell, stop the running container using 
+"docker stop container_id".
+Then, type "docker-compose up" and done!!!
+
+
+
+
+- Next iteration:
+***Add this to the docker compose and change it according to your project:
+
+version: "3.7"
+services:
+  phystechgram:
+    image: account_checker:latest
+
+    container_name: phystechgram
+    build: .
+    restart: always
+
+    environment:
+      - FLASK_ENV=development
+      - FLASK_APP=/App/formflask.py
+      - DATABASE=/App/memory.db
+
+    ports:
+      - 5000:5000
+
+    volumes:
+      - ./:/App
+
+
+***Add this in the python file where you start connecting to the database:
+database = os.getenv('DATABASE', 'memory.db') //memory.db is the database name
+with sqlite3.connect(database) as conn:
+...
+...
+...
+
+Note: don't forget to uncomment all of the
+cursor.execute("CREATE TABLE IF NOT EXISTS users "
+			...
+			...
+			...
+		  )
+
+
+***Now go to windows shell and type "docker-compose up" and the database should start working!!
+
+
+
