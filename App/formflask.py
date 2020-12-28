@@ -589,6 +589,6 @@ if __name__ == '__main__':
 
     # In order to make it run locally in Google cloud, add "port=8080". Only when you want to deploy it to Google cloud!
     # Otherwise, remove it from the file in order to run it in Pycharm!
-    # socketio.run(app, host="0.0.0.0", port=8080, debug=True)  # by default port is 5000
+    socketio.run(app, host="0.0.0.0", port=8080, debug=True)  # by default port is 5000
 
-    socketio.run(app, host="0.0.0.0", debug=True)
+    # socketio.run(app, host="0.0.0.0", debug=True)
