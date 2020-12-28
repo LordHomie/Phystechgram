@@ -10,10 +10,10 @@ from werkzeug.utils import secure_filename
 
 #When you run on IDE
 # UPLOAD_FOLDER = '/Users/ASUS/Documents/MIPT/Software development practice/Phystechgram/App/static/images'
-# UPLOAD_FOLDER = './static/images'
+UPLOAD_FOLDER = './static/images'
 
 #When you run on docker-compose and Google Engine
-UPLOAD_FOLDER = './images'
+# UPLOAD_FOLDER = './images'
 
 ALLOWED_EXTENSIONS = set(['txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'])
 
@@ -140,6 +140,7 @@ def feeds():
 def add_user():
     name = request.form.get('uname')
     email = request.form.get('uemail')
+    birthday = request.form.get('birthday')
     password = request.form.get('upassword')
 
     with sqlite3.connect('memory.db') as conn:
@@ -148,7 +149,7 @@ def add_user():
         exists = cursor.fetchall()
     if not exists:
         cursor.execute(
-            """INSERT INTO users(name, email, password) VALUES ('{}', '{}', '{}')""".format(name, email, password))
+            """INSERT INTO users(name, email, birthday, password) VALUES ('{}', '{}', '{}', '{}')""".format(name, email, birthday, password))
         conn.commit()
 
         cursor.execute('''SELECT * FROM users WHERE email=?''', (email,))
@@ -240,18 +241,22 @@ def add_picture():
 
         image = request.files['file']  # myfile is name of input tag
         filename = secure_filename(image.filename)
-        image.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-        path = os.path.realpath(image.filename)
-        # print(image.filename)
-        # print(path)
-
-        with sqlite3.connect('memory.db') as conn:
-            cursor = conn.cursor()
-            name = session['name']
-            cursor.execute('''UPDATE users SET photo=? WHERE name=?''', (image.filename, name))
-            conn.commit()
-
-        return redirect("/settings")
+        if image.filename != '':
+            image.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+            path = os.path.realpath(image.filename)
+            # print(image.filename)
+            # print(path)
+            with sqlite3.connect('memory.db') as conn:
+                cursor = conn.cursor()
+                name = session['name']
+                cursor.execute('''UPDATE users SET photo=? WHERE name=?''', (image.filename, name))
+                conn.commit()
+            print("not empty")
+            return redirect("/settings")
+        if image.filename == '':
+            pass
+            print("empty")
+            return redirect("/settings")
     else:
         return redirect('/')
 
@@ -448,18 +453,27 @@ def add_post():
 
         image = request.files['file']  # myfile is name of input tag
         filename = secure_filename(image.filename)
-        image.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-        path = os.path.realpath(image.filename)
+        if image.filename != '':
+            image.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+            path = os.path.realpath(image.filename)
 
-        with sqlite3.connect('memory.db') as conn:
-            cursor = conn.cursor()
-            cursor.execute(
-                """INSERT INTO posts(feeds, photo, user, likes) VALUES ('{}', '{}', '{}', '{}')""".format(feeds,
-                                                                                                          image.filename,
-                                                                                                          name, 0))
-            # cursor.execute("""INSERT INTO posts(photo, user) VALUES ('{}', '{}')""".format(image.filename, name))
-            conn.commit()
+            with sqlite3.connect('memory.db') as conn:
+                cursor = conn.cursor()
+                cursor.execute(
+                    """INSERT INTO posts(feeds, photo, user, likes) VALUES ('{}', '{}', '{}', '{}')""".format(feeds,
+                                                                                                              image.filename,
+                                                                                                              name, 0))
+                # cursor.execute("""INSERT INTO posts(photo, user) VALUES ('{}', '{}')""".format(image.filename, name))
+                conn.commit()
 
+                return redirect('/home')
+        if image.filename == '':
+            with sqlite3.connect('memory.db') as conn:
+                cursor = conn.cursor()
+                cursor.execute(
+                    """INSERT INTO posts(feeds, user, likes) VALUES ('{}', '{}', '{}')""".format(feeds, name, 0))
+                # cursor.execute("""INSERT INTO posts(photo, user) VALUES ('{}', '{}')""".format(image.filename, name))
+                conn.commit()
             return redirect('/home')
 
     else:
