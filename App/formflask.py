@@ -13,7 +13,7 @@ from werkzeug.utils import secure_filename
 # UPLOAD_FOLDER = './static/images'
 
 #When you run on docker-compose and Google Engine
-UPLOAD_FOLDER = ''
+UPLOAD_FOLDER = '.'
 
 ALLOWED_EXTENSIONS = set(['txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'])
 
