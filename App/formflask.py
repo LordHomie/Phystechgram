@@ -10,10 +10,10 @@ from werkzeug.utils import secure_filename
 
 #When you run on IDE
 # UPLOAD_FOLDER = '/Users/ASUS/Documents/MIPT/Software development practice/Phystechgram/App/static/images'
-UPLOAD_FOLDER = './static/images'
+# UPLOAD_FOLDER = './static/images'
 
 #When you run on docker-compose and Google Engine
-# UPLOAD_FOLDER = './images'
+UPLOAD_FOLDER = './images'
 
 ALLOWED_EXTENSIONS = set(['txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'])
 
