@@ -19,8 +19,18 @@ services:
     ports:
     - 5000:5000
 
+    networks:
+      - my_network
+
     volumes:
     - ./:/App
+
+networks:
+  my_network:
+    session_affinity: true
+
+#network:
+#  session_affinity: true
 
 #  phystechgram:
 #    container_name: homie

@@ -53,7 +53,16 @@ gcloud config set compute/zone europe-north1-b
 
 
 
-Notes for using Google cloud terminal:
+-Notes for using Google cloud terminal:
+
+- Link: https://console.cloud.google.com/kubernetes/list?project=midyear-pattern-298211&authuser=1&organizationId=583009512653&cloudshell=true
+
 - To remove a directory, type: "rm -r name_directory/"
+
 - We don't have to do it locally since it's optional. And because it lags and we can't exit the program using ctrl+c
+
+
+
+-Link for the Kubernetes website:
+https://kubernetes.io/docs/tutorials/stateless-application/guestbook/
 
